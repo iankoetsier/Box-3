@@ -4,27 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Box 3 Collegezaal Game</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .game-card { background: white; max-width: 400px; width: 100%; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        h1 { color: #1e3a8a; text-align: center; margin-top: 0; font-size: 24px; }
-        .stat-box { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 18px; font-weight: bold; color: #1e40af; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; font-size: 14px; }
-        input[type="range"] { width: 100%; margin-bottom: 5px; }
-        .slider-val { font-weight: bold; color: #2563eb; }
-        button { width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #059669; }
-        .result { display: none; margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0; }
-        .chance-box { display: none; margin-top: 20px; padding: 15px; background: #fff7ed; border-radius: 8px; border: 1px solid #ffedd5; }
-        .error { color: #dc2626; font-size: 14px; margin-top: 5px; font-weight: bold; text-align: center; }
-    </style>
 </head>
 <body>
 
 <div class="game-card">
     <h1>Box 3 Meester 💸</h1>
-    <div class="stat-box">Beschikbaar Budget: <span id="budgetDisplay">€150.000</span></div>
+    <div class="stat-box">Beschikbaar Budget: <span id="budgetDisplay">€0</span></div>
     
     <div class="input-group">
         <label>Spaargeld (Fictief rendement: 1,28%): <span class="slider-val" id="valSavings">€50.000</span></label>
@@ -44,46 +29,56 @@
     <div id="errorMsg" class="error"></div>
     <button onclick="calculateTax()" style="margin-top: 10px;">Dien Belastingaangifte In</button>
 
-    <!-- Kanskaart Display Box -->
     <div id="chanceCardBox" class="chance-box">
-        <h3 style="margin-top:0; color:#c2410c;">⚡ Kanskaart getrokken!</h3>
+        <h3 style="margin-top:0; color:#c2410c;">⚡ Kanskaarten over 8 ronden getrokken!</h3>
         <p id="chanceText" style="font-style:italic; color:#7c2d12; margin-bottom:0;"></p>
     </div>
 
     <div id="resultBox" class="result">
         <h3 style="margin-top:0; color:#166534;">De Belastingdienst heeft gesproken:</h3>
-        <p>Grondslag na vrijstelling: <strong id="resGrondslag">€0</strong></p>
-        <p>Berekend Fictief Rendement: <strong id="resRendement">€0</strong></p>
-        <p>Te betalen Box 3 belasting (36%): <span style="color:#dc2626; font-weight:bold;" id="resTax">€0</span></p>
+        <p>Grondslag na vrijstelling (Eindjaar): <strong id="resGrondslag">€0</strong></p>
+        <p>Berekend Fictief Rendement (Eindjaar): <strong id="resRendement">€0</strong></p>
+        <p>Totale Box 3 belasting over 8 jaar: <span style="color:#dc2626; font-weight:bold;" id="resTax">€0</span></p>
         <p>Jouw Netto Eindvermogen: <span style="color:#166534; font-weight:bold;" id="resNetto">€0</span></p>
     </div>
 </div>
-
+<style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .game-card { background: white; max-width: 450px; width: 100%; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    h1 { color: #1e3a8a; text-align: center; margin-top: 0; font-size: 24px; }
+    .stat-box { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 18px; font-weight: bold; color: #1e40af; }
+    .input-group { margin-bottom: 15px; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; font-size: 14px; }
+    input[type="range"] { width: 100%; margin-bottom: 5px; }
+    .slider-val { font-weight: bold; color: #2563eb; }
+    button { width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    button:hover { background: #059669; }
+    .result { display: none; margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0; }
+    .chance-box { display: none; margin-top: 20px; padding: 15px; background: #fff7ed; border-radius: 8px; border: 1px solid #ffedd5; max-height: 250px; overflow-y: auto; }
+    .error { color: #dc2626; font-size: 14px; margin-top: 5px; font-weight: bold; text-align: center; }
+</style>
 <script>
-        const TOTAL_BUDGET = 150000;
+    const TOTAL_BUDGET = 150000;
     const VRIJSTELLING = 59357;
 
+    updateSliders();
+
     function updateSliders() {
-        let savings = parseInt(document.getElementById('savings').value);
-        let investments = parseInt(document.getElementById('investments').value);
-        let green = parseInt(document.getElementById('green').value);
+        let s = parseInt(document.getElementById('savings').value);
+        let i = parseInt(document.getElementById('investments').value);
+        let g = parseInt(document.getElementById('green').value);
+        let rem = TOTAL_BUDGET - (s + i + g);
+
+        document.getElementById('valSavings').innerText = "€" + s.toLocaleString('nl-NL');
+        document.getElementById('valInvestments').innerText = "€" + i.toLocaleString('nl-NL');
+        document.getElementById('valGreen').innerText = "€" + g.toLocaleString('nl-NL');
+
+        let err = document.getElementById('errorMsg');
+        if (rem < 0) err.innerText = "Je hebt €" + Math.abs(rem).toLocaleString('nl-NL') + " te veel uitgegeven!";
+        else if (rem > 0) err.innerText = "Je hebt nog €" + rem.toLocaleString('nl-NL') + " over om te verdelen.";
+        else err.innerText = "";
         
-        let currentTotal = savings + investments + green;
-        let remaining = TOTAL_BUDGET - currentTotal;
-
-        document.getElementById('valSavings').innerText = "€" + savings.toLocaleString('nl-NL');
-        document.getElementById('valInvestments').innerText = "€" + investments.toLocaleString('nl-NL');
-        document.getElementById('valGreen').innerText = "€" + green.toLocaleString('nl-NL');
-
-        let errorBox = document.getElementById('errorMsg');
-        if (remaining < 0) {
-            errorBox.innerText = "Je hebt €" + Math.abs(remaining).toLocaleString('nl-NL') + " te veel uitgegeven!";
-        } else if (remaining > 0) {
-            errorBox.innerText = "Je hebt nog €" + remaining.toLocaleString('nl-NL') + " over om te verdelen.";
-        } else {
-            errorBox.innerText = "";
-        }
-        document.getElementById('budgetDisplay').innerText = "€" + remaining.toLocaleString('nl-NL');
+        document.getElementById('budgetDisplay').innerText = "€" + rem.toLocaleString('nl-NL');
     }
 
     function calculateTax() {
@@ -96,85 +91,81 @@
             return;
         }
 
-        // --- DEFINITIE VAN DE 10 KANSKAARTEN ---
         const kanskaarten = [
-            { id: 0, text: "⚠️ CRYPTO CRASH! Je beleggingen halveren direct ná 1 januari. De Belastingdienst rekent echter met de peildatum, dus je betaalt belasting over geld dat je niet meer hebt!", effect: (s, i, g) => ({ savings: s, investments: i * 0.5, green: g }) },
-            { id: 1, text: "📉 PRINSJESDAG PANIEK: De overheid verlaagt onverwacht de heffingsvrije grens naar €51.396. Je betaalt sneller belasting!", effect: (s, i, g) => ({ vrijstelling: 51396 }) },
-            { id: 2, text: "🌱 GROENE SUBSIDIE: Het klimaatdoel moet gehaald worden. Je volledige Groene Spaargeld is nu 100% vrijgesteld, ongeacht het oude maximum van €57.000!", effect: (s, i, g) => ({ groenVrij: g }) },
-            { id: 3, text: "💸 RENTESTIJSGING: De inflatie dwingt de banken tot actie. Het fictieve rendement op sparen stijgt direct naar 3,50%!", effect: (s, i, g) => ({ rendSparen: 0.035 }) },
-            { id: 4, text: "⚖️ HOGE RAAD GRIJPT IN: Je maakt dit jaar aantoonbaar verlies op je beleggingen. Dankzij de Tegenbewijsregeling hoef je €0 belasting te betalen!", effect: (s, i, g) => ({ tegenbewijs: true }) },
-            { id: 5, text: "💍 FISCAAL PARTNERSCHAP: Je vindt de liefde van je leven (en fiscaal voordeel)! Je heffingsvrije vermogen verdubbelt direct naar €118.714.", effect: (s, i, g) => ({ vrijstelling: 118714 }) },
-            { id: 6, text: "💼 BOX 3 BEURSSUCCES: De aandelenmarkt explodeert! Je werkelijke vermogen in beleggingen stijgt direct met 20% vóórdat de fiscus kijkt.", effect: (s, i, g) => ({ savings: s, investments: i * 1.2, green: g }) },
-            { id: 7, text: "🏢 REVOLUTIE VASTGOED: De overheid verhoogt het fictief rendement voor overige bezittingen extreem naar 7.5%. Beleggen wordt zwaarder belast!", effect: (s, i, g) => ({ rendBeleggen: 0.075 }) },
-            { id: 8, text: "🔍 BELASTINGCONTROLE: De fiscus vindt een oude buitenlandse rekening. Je krijgt een naheffing en boete van €4.500 op je netto eindvermogen.", effect: (s, i, g) => ({ boete: 4500 }) },
-            { id: 9, text: "💰 ERFENIS ONTVANGEN: Je ontvangt een belastingvrije erfenis van €25.000 die direct wordt toegevoegd aan je spaarsaldo.", effect: (s, i, g) => ({ savings: s + 25000, investments: i, green: g }) }
+            { text: "⚠️ CRYPTO CRASH! Je beleggingen halveren direct ná 1 januari. De Belastingdienst rekent met de peildatum, dus je betaalt belasting over geld dat verdwenen is!", effect: (s, i, g) => ({ s: s, i: i * 0.5, g: g }) },
+            { text: "📉 PRINSJESDAG PANIEK: De overheid verlaagt onverwacht de heffingsvrije grens naar €51.396. Je betaalt dit jaar sneller belasting!", effect: (s, i, g) => ({ vrij: 51396 }) },
+            { text: "🌱 GROENE SUBSIDIE: Het klimaatdoel moet gehaald worden. Je volledige Groene Spaargeld is nu 100% vrijgesteld, ongeacht het wettelijke maximum van €57.000!", effect: (s, i, g) => ({ groenVrij: g }) },
+            { text: "💸 RENTESTIJSGING: De inflatie dwingt banken tot actie. Het fictieve rendement op sparen stijgt direct naar 3,50%!", effect: (s, i, g) => ({ rendS: 0.035 }) },
+            { text: "⚖️ HOGE RAAD GRIJPT IN: Je maakt dit jaar aantoonbaar verlies op je beleggingen. Dankzij de Tegenbewijsregeling hoef je €0 belasting te betalen!", effect: (s, i, g) => ({ tegenbewijs: true }) },
+            { text: "💍 FISCAAL PARTNERSCHAP: Je vindt de liefde van je leven (en fiscaal voordeel)! Je heffingsvrije vermogen verdubbelt direct naar €118.714.", effect: (s, i, g) => ({ vrij: 118714 }) },
+            { text: "💼 BOX 3 BEURSSUCCES: De aandelenmarkt explodeert! Je werkelijke vermogen in beleggingen stijgt direct met 25% vóórdat de fiscus kijkt.", effect: (s, i, g) => ({ s: s, i: i * 1.25, g: g }) },
+            { text: "🏢 REVOLUTIE VASTGOED: De overheid verhoogt het fictief rendement voor overige bezittingen extreem naar 7,5%. Beleggen wordt zwaarder belast!", effect: (s, i, g) => ({ rendI: 0.075 }) },
+            { text: "🔍 BELASTINGCONTROLE: De fiscus vindt een oude buitenlandse rekening. Je krijgt een naheffing en boete van €3.500 op je saldo.", effect: (s, i, g) => ({ boete: 3500 }) },
+            { text: "💰 ERFENIS ONTVANGEN: Je ontvangt een belastingvrije erfenis van €15.000 die direct wordt toegevoegd aan je spaarsaldo.", effect: (s, i, g) => ({ s: s + 15000, i: i, g: g }) },
+            { text: "🏦 BANKFAILLESEMENT: Een buitenlandse bank valt om. Je verliest €10.000 aan spaargeld dat buiten het depositogarantiestelsel viel.", effect: (s, i, g) => ({ s: Math.max(0, s - 10000), i: i, g: g }) },
+            { text: "📜 SCHENKINGSVRIJSTELLING: Je doet een slimme papieren schenking aan je kinderen. Je belastbaar vermogen in Box 3 daalt direct met €20.000.", effect: (s, i, g) => ({ s: Math.max(0, s - 20000), i: i, g: g }) },
+            { text: "📈 INFLATIE-CORRECTIE: De overheid indexeert de vrijstelling wegens extreme inflatie. Je heffingsvrije vermogen stijgt naar €65.000.", effect: (s, i, g) => ({ vrij: 65000 }) },
+            { text: "🛑 BELEGGINGSSTOP: Je verkoopt uit angst al je aandelen en zet het om in regulier sparen. Je rendement is laag, maar wel veilig.", effect: (s, i, g) => ({ s: s + i, i: 0, g: g }) },
+            { text: "🎭 GOKJE GEWAAGD: Je opent een crypto-account. Je inzet verdrievoudigt (+200% rendement op je beleggingen) vlak voor de peildatum!", effect: (s, i, g) => ({ s: s, i: i * 3, g: g }) }
         ];
 
-        // --- SIMULATIE LUS (6 REPETITIES) ---
         let cumulatieveBelasting = 0;
         let getrokkenKaartenTekst = "";
-        let huidigVermogen = { savings: savings, investments: investments, green: green };
+        let tabelInhoudHtml = "";
+        let huidigVermogen = { s: savings, i: investments, g: green };
 
-        for (let ronde = 1; ronde <= 6; ronde++) {
-            // Basiswaarden resetten per ronde op basis van de huidige vermogensstand
+        for (let ronde = 1; ronde <= 8; ronde++) {
             let actueleVrijstelling = VRIJSTELLING;
             let fictiefRendementSparen = 0.0128;
             let fictiefRendementBeleggen = 0.06;
-            let effectieveGroenVrijstelling = Math.min(huidigVermogen.green, 57000);
+            let effectieveGroenVrijstelling = Math.min(huidigVermogen.g, 57000);
             let tegenbewijsRegeling = false;
             let incidenteleBoete = 0;
 
-            // Trek een willekeurige kaart uit de 10 opties
             let randomIdx = Math.floor(Math.random() * kanskaarten.length);
             let kaart = kanskaarten[randomIdx];
+            let resK = kaart.effect(huidigVermogen.s, huidigVermogen.i, huidigVermogen.g);
             
-            // Log de gebeurtenis van deze ronde
-            getrokkenKaartenTekst += `<strong>Ronde ${ronde}:</strong> ${kaart.text}<br><br>`;
+            if (resK.s !== undefined) { huidigVermogen.s = resK.s; huidigVermogen.i = resK.i; huidigVermogen.g = resK.g; }
+            if (resK.vrij !== undefined) actueleVrijstelling = resK.vrij;
+            if (resK.groenVrij !== undefined) effectieveGroenVrijstelling = resK.groenVrij;
+            if (resK.rendS !== undefined) fictiefRendementSparen = resK.rendS;
+            if (resK.rendI !== undefined) fictiefRendementBeleggen = resK.rendI;
+            if (resK.tegenbewijs !== undefined) tegenbewijsRegeling = resK.tegenbewijs;
+            if (resK.boete !== undefined) incidenteleBoete = resK.boete;
 
-            // Pas het effect van de getrokken kaart toe
-            let resultaatKanskaart = kaart.effect(huidigVermogen.savings, huidigVermogen.investments, huidigVermogen.green);
-            
-            if (resultaatKanskaart.savings !== undefined) {
-                huidigVermogen.savings = resultaatKanskaart.savings;
-                huidigVermogen.investments = resultaatKanskaart.investments;
-                huidigVermogen.green = resultaatKanskaart.green;
-            }
-            if (resultaatKanskaart.vrijstelling !== undefined) actueleVrijstelling = resultaatKanskaart.vrijstelling;
-            if (resultaatKanskaart.groenVrij !== undefined) effectieveGroenVrijstelling = resultaatKanskaart.groenVrij;
-            if (resultaatKanskaart.rendSparen !== undefined) fictiefRendementSparen = resultaatKanskaart.rendSparen;
-            if (resultaatKanskaart.rendBeleggen !== undefined) fictiefRendementBeleggen = resultaatKanskaart.rendBeleggen;
-            if (resultaatKanskaart.tegenbewijs !== undefined) tegenbewijsRegeling = resultaatKanskaart.tegenbewijs;
-            if (resultaatKanskaart.boete !== undefined) incidenteleBoete = resultaatKanskaart.boete;
-
-            // Bereken de totale bezittingen aan het einde van dit jaar
-            let subTotaalBudget = huidigVermogen.savings + huidigVermogen.investments + huidigVermogen.green;
+            let subTotaalBudget = huidigVermogen.s + huidigVermogen.i + huidigVermogen.g;
             let belastbaarVermogen = subTotaalBudget - effectieveGroenVrijstelling;
             let grondslag = Math.max(0, belastbaarVermogen - actueleVrijstelling);
 
-            // Fictief rendement berekenen
-            let rendementSparen = huidigVermogen.savings * fictiefRendementSparen;
-            let rendementBeleggen = huidigVermogen.investments * fictiefRendementBeleggen;
-            let rendementGroen = (huidigVermogen.green - effectieveGroenVrijstelling) * 0.06;
+            let rendementSparen = huidigVermogen.s * fictiefRendementSparen;
+            let rendementBeleggen = huidigVermogen.i * fictiefRendementBeleggen;
+            let rendementGroen = (huidigVermogen.g - effectieveGroenVrijstelling) * 0.06;
             let totaalRendement = rendementSparen + rendementBeleggen + rendementGroen;
             
             let weegFactor = belastbaarVermogen > 0 ? (grondslag / belastbaarVermogen) : 0;
             let belastbaarRendement = totaalRendement * weegFactor;
             
-            // Belasting bepalen (36%)
             let rondeBelasting = tegenbewijsRegeling ? 0 : (belastbaarRendement * 0.36);
             rondeBelasting += incidenteleBoete;
 
-            // Vermogen bijwerken: trek de verschuldigde belasting af van het spaarsaldo
-            huidigVermogen.savings = Math.max(0, huidigVermogen.savings - rondeBelasting);
+            huidigVermogen.s = Math.max(0, huidigVermogen.s - rondeBelasting);
             cumulatieveBelasting += rondeBelasting;
+            let eindVermogenRonde = huidigVermogen.s + huidigVermogen.i + huidigVermogen.g;
+
+            getrokkenKaartenTekst += `<strong>Ronde ${ronde}:</strong> ${kaart.text}<br><br>`;
+            tabelInhoudHtml += `
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 6px 0;">Jaar ${ronde}</td>
+                    <td style="text-align: right; color: #dc2626;">€${Math.round(rondeBelasting).toLocaleString('nl-NL')}</td>
+                    <td style="text-align: right; color: #166534; font-weight: bold;">€${Math.round(eindVermogenRonde).toLocaleString('nl-NL')}</td>
+                </tr>`;
         }
 
-        // --- BEREKENING EINDRESULTATEN NA 6 RONDEN ---
-        let totaalEindVermogen = huidigVermogen.savings + huidigVermogen.investments + huidigVermogen.green;
-        let fictieveEindGrondslag = Math.max(0, (totaalEindVermogen - Math.min(huidigVermogen.green, 57000)) - VRIJSTELLING);
-        let fictiefEindRendement = (huidigVermogen.savings * 0.0128) + (huidigVermogen.investments * 0.06);
+        let totaalEindVermogen = huidigVermogen.s + huidigVermogen.i + huidigVermogen.g;
+        let fictieveEindGrondslag = Math.max(0, (totaalEindVermogen - Math.min(huidigVermogen.g, 57000)) - VRIJSTELLING);
+        let fictiefEindRendement = (huidigVermogen.s * 0.0128) + (huidigVermogen.i * 0.06);
 
-        // Render resultaten naar het scherm
         document.getElementById('chanceText').innerHTML = getrokkenKaartenTekst;
         document.getElementById('chanceCardBox').style.display = 'block';
 
@@ -183,15 +174,25 @@
         document.getElementById('resTax').innerText = "€" + cumulatieveBelasting.toLocaleString('nl-NL', {maximumFractionDigits: 0});
         document.getElementById('resNetto').innerText = "€" + totaalEindVermogen.toLocaleString('nl-NL', {maximumFractionDigits: 0});
         
-        // Wijzig de header van het resultaatvenster voor duidelijkheid
-        document.getElementById('resultBox').getElementsByTagName('h3')[0].innerText = "Resultaat na 6 belastingjaren (Rondes):";
-        document.getElementById('resultBox').style.display = 'block';
-    }
-    }
-    }
-    
-    updateSliders();
-</script>
+        let bestaandeTabel = document.getElementById('rondeOverzichtTabel');
+        if (bestaandeTabel) bestaandeTabel.remove();
 
-</body>
-</html>
+        let tabelHtml = `
+            <div id="rondeOverzichtTabel" style="margin-top: 20px; border-top: 2px dashed #bbf7d0; padding-top: 15px;">
+                <h4 style="margin: 0 0 10px 0; color: #166534;">📊 Eindoverzicht per belastingronde:</h4>
+                <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #bbf7d0; text-align: left; font-weight: bold; color: #374151;">
+                            <th style="padding-bottom: 5px;">Ronde</th>
+                            <th style="text-align: right; padding-bottom: 5px;">Belasting</th>
+                            <th style="text-align: right; padding-bottom: 5px;">Vermogen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tabelInhoudHtml}
+                    </tbody>
+                </table>
+            </div>`;
+  document.getElementById('resultBox').insertAdjacentHTML('beforeend', tabelHtml);
+  document.getElementById('resultBox').style.display = 'block';
+    }
