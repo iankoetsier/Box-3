@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box 3 Collegezaal Game</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f3f4f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .game-card { background: white; max-width: 400px; width: 100%; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { color: #1e3a8a; text-align: center; margin-top: 0; font-size: 24px; }
+        .stat-box { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 18px; font-weight: bold; color: #1e40af; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; font-size: 14px; }
+        input[type="range"] { width: 100%; margin-bottom: 5px; }
+        .slider-val { font-weight: bold; color: #2563eb; }
+        button { width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #059669; }
+        .result { display: none; margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0; }
+        .error { color: #dc2626; font-size: 14px; margin-top: 5px; font-weight: bold; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <h1>Box 3 Meester 💸</h1>
+    <div class="stat-box">Beschikbaar Budget: <span id="budgetDisplay">€150.000</span></div>
+    
+    <div class="input-group">
+        <label>Spaargeld (Fictief rendement: 1,28%): <span class="slider-val" id="valSavings">€50.000</span></label>
+        <input type="range" id="savings" min="0" max="150000" step="5000" value="50000" oninput="updateSliders()">
+    </div>
+
+    <div class="input-group">
+        <label>Beleggingen & Crypto (Fictief rendement: 6,00%): <span class="slider-val" id="valInvestments">€50.000</span></label>
+        <input type="range" id="investments" min="0" max="150000" step="5000" value="50000" oninput="updateSliders()">
+    </div>
+
+    <div class="input-group">
+        <label>Groen Sparen (Extra Vrijstelling!): <span class="slider-val" id="valGreen">€50.000</span></label>
+        <input type="range" id="green" min="0" max="150000" step="5000" value="50000" oninput="updateSliders()">
+    </div>
+
+    <div id="errorMsg" class="error"></div>
+    <button onclick="calculateTax()" style="margin-top: 10px;">Dien Belastingaangifte In</button>
+
+    <div id="resultBox" class="result">
+        <h3 style="margin-top:0; color:#166534;">De Belastingdienst heeft gesproken:</h3>
+        <p>Grondslag na vrijstelling (€59.357): <strong id="resGrondslag">€0</strong></p>
+        <p>Berekend Fictief Rendement: <strong id="resRendement">€0</strong></p>
+        <p>Te betalen Box 3 belasting (36%): <span style="color:#dc2626; font-weight:bold;" id="resTax">€0</span></p>
+        <p>Jouw Netto Eindvermogen: <span style="color:#166534; font-weight:bold;" id="resNetto">€0</span></p>
+    </div>
+</div>
+
+<script>
+    const TOTAL_BUDGET = 150000;
+    const VRIJSTELLING = 59357;
+
+    function updateSliders() {
+        let savings = parseInt(document.getElementById('savings').value);
+        let investments = parseInt(document.getElementById('investments').value);
+        let green = parseInt(document.getElementById('green').value);
+        
+        let currentTotal = savings + investments + green;
+        let remaining = TOTAL_BUDGET - currentTotal;
+
+        document.getElementById('valSavings').innerText = "€" + savings.toLocaleString('nl-NL');
+        document.getElementById('valInvestments').innerText = "€" + investments.toLocaleString('nl-NL');
+        document.getElementById('valGreen').innerText = "€" + green.toLocaleString('nl-NL');
+
+        let errorBox = document.getElementById('errorMsg');
+        if (remaining < 0) {
+            errorBox.innerText = "Je hebt €" + Math.abs(remaining).toLocaleString('nl-NL') + " te veel uitgegeven!";
+        } else if (remaining > 0) {
+            errorBox.innerText = "Je hebt nog €" + remaining.toLocaleString('nl-NL') + " over om te verdelen.";
+        } else {
+            errorBox.innerText = "";
+        }
+        document.getElementById('budgetDisplay').innerText = "€" + remaining.toLocaleString('nl-NL');
+    }
+
+    function calculateTax() {
+        let savings = parseInt(document.getElementById('savings').value);
+        let investments = parseInt(document.getElementById('investments').value);
+        let green = parseInt(document.getElementById('green').value);
+
+        if ((savings + investments + green) !== TOTAL_BUDGET) {
+            alert("Verdeel eerst exact je gehele budget van €150.000!");
+            return;
+        }
+
+        // Groene vrijstelling (tot max €57.000 in dit versimpelde model)
+        let effectieveGroenVrijstelling = Math.min(green, 57000);
+        
+        // Bereken grondslag
+        let belastbaarVermogen = TOTAL_BUDGET - effectieveGroenVrijstelling;
+        let grondslag = Math.max(0, belastbaarVermogen - VRIJSTELLING);
+
+        // Fictief rendement berekening
+        let rendementSparen = savings * 0.0128;
+        let rendementBeleggen = investments * 0.06;
+        let rendementGroen = (green - effectieveGroenVrijstelling) * 0.06; // Alleen deel boven vrijstelling telt als regulier beleggen
+        
+        let totaalRendement = rendementSparen + rendementBeleggen + rendementGroen;
+        
+        // Belastingdruk naar rato van grondslag
+        let weegFactor = grondslag / belastbaarVermogen;
+        let belastbaarRendement = totaalRendement * weegFactor;
+        let teBetalenBelasting = Math.max(0, Math.round(belastbaarRendement * 0.36));
+        
+        let nettoVermogen = TOTAL_BUDGET - teBetalenBelasting;
+
+        // UI Updaten
+        document.getElementById('resGrondslag').innerText = "€" + grondslag.toLocaleString('nl-NL');
+        document.getElementById('resRendement').innerText = "€" + Math.round(totaalRendement).toLocaleString('nl-NL');
+        document.getElementById('resTax').innerText = "€" + teBetalenBelasting.toLocaleString('nl-NL');
+        document.getElementById('resNetto').innerText = "€" + nettoVermogen.toLocaleString('nl-NL');
+        document.getElementById('resultBox').style.display = 'block';
+    }
+    
+    updateSliders();
+</script>
+
+</body>
+</html>
