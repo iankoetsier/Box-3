@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Box 3 Policy Challenge TEST</title>
+<title>Box 3 Policy Challenge</title>
 
 <style>
 
@@ -871,7 +871,369 @@ function(){
 });
 
 
+// =============================
+// DEEL 3 - JAARSIMULATIE
+// =============================
 
+
+
+// =============================
+// STRATEGIE INDIENEN
+// =============================
+
+
+document
+.getElementById("submitStrategy")
+.addEventListener(
+"click",
+function(){
+
+
+
+let gekozenVermogen =
+
+game.portfolio.saving +
+game.portfolio.investment +
+game.portfolio.green;
+
+
+
+if(gekozenVermogen !== game.wealth){
+
+    alert(
+    "Verdeel eerst het volledige vermogen."
+    );
+
+    return;
+
+}
+
+
+
+
+
+// =============================
+// MARKTONTWIKKELING
+// =============================
+
+
+
+let aandelenRendementen = [
+
+0.12,
+0.08,
+0.05,
+-0.04,
+-0.10,
+0.15
+
+];
+
+
+let aandelenRendement =
+
+aandelenRendementen[
+
+Math.floor(
+Math.random()*aandelenRendementen.length
+)
+
+];
+
+
+
+
+
+let spaarrentes = [
+
+0.01,
+0.025,
+0.04
+
+];
+
+
+let spaarrente =
+
+spaarrentes[
+
+Math.floor(
+Math.random()*spaarrentes.length
+)
+
+];
+
+
+
+
+
+let groenRendement = 0.04;
+
+
+
+
+
+
+// =============================
+// RENDEMENT
+// =============================
+
+
+
+let sparenResultaat =
+
+game.portfolio.saving *
+spaarrente;
+
+
+
+let beleggenResultaat =
+
+game.portfolio.investment *
+aandelenRendement;
+
+
+
+let groenResultaat =
+
+game.portfolio.green *
+groenRendement;
+
+
+
+let totaalRendement =
+
+sparenResultaat +
+beleggenResultaat +
+groenResultaat;
+
+
+
+
+
+
+
+// =============================
+// BOX 3
+// =============================
+
+
+
+let vrijstelling = 57000;
+
+
+let belastbaarVermogen =
+
+Math.max(
+
+0,
+
+game.wealth - vrijstelling
+
+);
+
+
+
+
+
+let rendementPercentage =
+
+totaalRendement /
+
+game.wealth;
+
+
+
+
+
+let fiscaleRendementsgrondslag =
+
+belastbaarVermogen *
+rendementPercentage;
+
+
+
+
+
+let belasting =
+
+Math.max(
+
+0,
+
+fiscaleRendementsgrondslag *
+0.36
+
+);
+
+
+
+
+
+
+// =============================
+// NIEUW VERMOGEN
+// =============================
+
+
+
+let nieuwVermogen =
+
+game.wealth +
+totaalRendement -
+belasting;
+
+
+
+
+
+// =============================
+// SCORE
+// =============================
+
+
+
+let punten = 500;
+
+
+
+if(nieuwVermogen > game.wealth){
+
+    punten += 200;
+
+}
+
+
+
+if(game.portfolio.green > 0){
+
+    punten += 50;
+
+}
+
+
+
+if(aandelenRendement < 0){
+
+    punten -= 100;
+
+}
+
+
+
+game.score += punten;
+
+
+
+
+
+
+
+// =============================
+// RESULTAAT TONEN
+// =============================
+
+
+
+document.getElementById("returnResult")
+.innerHTML =
+euro(totaalRendement);
+
+
+
+document.getElementById("taxResult")
+.innerHTML =
+euro(belasting);
+
+
+
+document.getElementById("newWealth")
+.innerHTML =
+euro(nieuwVermogen);
+
+
+
+
+
+
+// vermogen opslaan
+
+game.wealth =
+nieuwVermogen;
+
+
+
+document.getElementById("wealth")
+.innerHTML =
+euro(game.wealth);
+
+
+
+document.getElementById("score")
+.innerHTML =
+game.score;
+
+
+
+
+
+
+// jaar verhogen
+
+
+if(game.year < game.maxYears){
+
+    game.year++;
+
+}
+
+
+
+
+
+updateScreen();
+
+
+
+
+
+document.querySelector(".info")
+.innerHTML =
+
+
+`
+
+📈 Economische ontwikkeling
+
+<br><br>
+
+Aandelenmarkt:
+
+<strong>
+${(aandelenRendement*100).toFixed(1)}%
+</strong>
+
+<br>
+
+Spaarrente:
+
+<strong>
+${(spaarrente*100).toFixed(1)}%
+</strong>
+
+<br><br>
+
+Je nieuwe vermogen is berekend.
+
+`;
+
+
+
+
+
+});
+
+    
 
 // =============================
 // STARTWAARDE TONEN
