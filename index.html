@@ -858,78 +858,301 @@ document
 function(){
 
 
-    let total =
-    game.portfolio.saving +
-    game.portfolio.investment +
-    game.portfolio.green;
+let total =
+game.portfolio.saving +
+game.portfolio.investment +
+game.portfolio.green;
 
 
 
-    if(total !== game.wealth){
+if(total !== game.wealth){
 
-        alert(
-        "Verdeel eerst het volledige vermogen."
-        );
+    alert(
+    "Verdeel eerst het volledige vermogen."
+    );
 
-        return;
+    return;
 
-    }
-
-
-
-    document.querySelector(".news")
-    .innerHTML =
-
-    `
-    📊 Strategie ontvangen
-
-    <br><br>
-
-    Je portefeuille:
-
-    <br><br>
-
-    Spaargeld:
-    ${euro(game.portfolio.saving)}
-
-    <br>
-
-    Beleggingen:
-    ${euro(game.portfolio.investment)}
-
-    <br>
-
-    Groen:
-    ${euro(game.portfolio.green)}
-
-    <br><br>
-
-    De economische ontwikkeling
-    wordt nu berekend.
-
-    `;
+}
 
 
 
-    document.getElementById("strategy")
-    .innerHTML =
-
-    "Actief";
-
+// =============================
+// NORMALE ECONOMISCHE ONTWIKKELING
+// =============================
 
 
-    game.history.push({
+// aandelenmarkt
 
-        year: game.year,
+let aandelenRendementen = [
+    0.15,
+    0.08,
+    0.05,
+    -0.04,
+    -0.10
+];
 
-        portfolio:
-        {...game.portfolio},
 
-        startingWealth:
-        game.wealth
+let aandelenRendement =
+aandelenRendementen[
+Math.floor(
+Math.random() *
+aandelenRendementen.length
+)
+];
 
-    });
 
+
+// spaarrente
+
+let spaarrente = 
+[0.01,0.025,0.04]
+[
+Math.floor(
+Math.random()*3
+)
+];
+
+
+
+// groen rendement
+
+let groenRendement = 0.04;
+
+
+
+// =============================
+// RENDEMENT BEREKENEN
+// =============================
+
+
+let resultaatSparen =
+game.portfolio.saving *
+spaarrente;
+
+
+let resultaatBeleggen =
+game.portfolio.investment *
+aandelenRendement;
+
+
+let resultaatGroen =
+game.portfolio.green *
+groenRendement;
+
+
+
+let totaalRendement =
+resultaatSparen +
+resultaatBeleggen +
+resultaatGroen;
+
+
+
+// =============================
+// BOX 3 BASISMODEL
+// =============================
+
+
+let vrijstelling = 57000;
+
+
+let belastbaarVermogen =
+Math.max(
+0,
+game.wealth - vrijstelling
+);
+
+
+
+let fictiefRendement =
+totaalRendement /
+game.wealth;
+
+
+
+let box3Grondslag =
+belastbaarVermogen *
+fictiefRendement;
+
+
+
+let belasting =
+Math.max(
+0,
+box3Grondslag * 0.36
+);
+
+
+
+// =============================
+// NIEUW VERMOGEN
+// =============================
+
+
+let nieuwVermogen =
+game.wealth +
+totaalRendement -
+belasting;
+
+
+
+// =============================
+// SCORE
+// =============================
+
+
+let punten = 500;
+
+
+if(nieuwVermogen > game.wealth){
+
+    punten += 200;
+
+}
+
+
+if(game.portfolio.green > 0){
+
+    punten += 50;
+
+}
+
+
+if(aandelenRendement < 0){
+
+    punten -= 50;
+
+}
+
+
+game.score += punten;
+
+
+
+// =============================
+// OPSLAAN
+// =============================
+
+
+game.history.push({
+
+jaar: game.year,
+
+startvermogen:
+game.wealth,
+
+rendement:
+totaalRendement,
+
+belasting:
+belasting,
+
+eindvermogen:
+nieuwVermogen,
+
+aandelen:
+aandelenRendement
+
+});
+
+
+
+game.wealth =
+nieuwVermogen;
+
+
+
+// =============================
+// SCHERM BIJWERKEN
+// =============================
+
+
+document.getElementById("returnResult")
+.innerHTML =
+euro(totaalRendement);
+
+
+
+document.getElementById("taxResult")
+.innerHTML =
+euro(belasting);
+
+
+
+document.getElementById("newWealth")
+.innerHTML =
+euro(nieuwVermogen);
+
+
+
+document.getElementById("wealth")
+.innerHTML =
+euro(nieuwVermogen);
+
+
+
+document.getElementById("score")
+.innerHTML =
+game.score;
+
+
+
+document.querySelector(".news")
+.innerHTML =
+
+`
+📈 Jaar ${game.year}
+
+<br><br>
+
+Aandelenrendement:
+<strong>
+${(aandelenRendement*100).toFixed(1)}%
+</strong>
+
+<br>
+
+Spaarrente:
+<strong>
+${(spaarrente*100).toFixed(1)}%
+</strong>
+
+<br><br>
+
+Je vermogen veranderde door rendement en belasting.
+`;
+
+
+
+document.querySelector(".feedback")
+.innerHTML =
+
+`
+
+<strong>🎓 Feedback</strong>
+
+<p>
+
+${
+
+nieuwVermogen > game.wealth ?
+
+"Goed gedaan! Je strategie heeft vermogen opgebouwd."
+
+:
+
+"Dit jaar daalde je vermogen. Kijk naar je risico en spreiding."
+
+}
+
+</p>
+
+`;
+
+
+
+});
 
 
 });
