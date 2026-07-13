@@ -283,7 +283,12 @@ card.action();
         }
         
         // Netto eindvermogen minus de belasting én minus eventueel werkelijk verlies door de crash
-        let nettoVermogen = TOTAL_BUDGET - teBetalenBelasting - vermogensVerlies;
+        let nettoVermogen =
+TOTAL_BUDGET
+- teBetalenBelasting
+- vermogensVerlies
++ nettoBonus
+- nettoMalus;
 
         // UI Updaten
         document.getElementById('resGrondslag').innerText = "€" + grondslag.toLocaleString('nl-NL');
