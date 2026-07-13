@@ -708,47 +708,43 @@ function updatePortfolio(changed){
 
 
 
-    let verschil =
-    totaal - game.wealth;
+   let verschil =
+totaal - game.wealth;
 
 
+// Als er teveel is verdeeld,
+// haal het verschil af van de categorie die niet gewijzigd is
 
-    // voorkomen dat studenten teveel verdelen
+if(verschil > 0){
 
-    if(verschil > 0){
+    if(changed === "saving"){
 
+        green =
+        Math.max(0, green - verschil);
 
-        if(changed !== "saving"){
-
-            investment =
-            Math.max(0,investment-verschil);
-
-            document.getElementById("investment").value =
-            investment;
-
-        }
-
-        else if(changed !== "investment"){
-
-            green =
-            Math.max(0,green-verschil);
-
-            document.getElementById("green").value =
-            green;
-
-        }
-
-        else{
-
-            saving =
-            Math.max(0,saving-verschil);
-
-            document.getElementById("saving").value =
-            saving;
-
-        }
+        document.getElementById("green").value = green;
 
     }
+
+    else if(changed === "investment"){
+
+        saving =
+        Math.max(0, saving - verschil);
+
+        document.getElementById("saving").value = saving;
+
+    }
+
+    else if(changed === "green"){
+
+        investment =
+        Math.max(0, investment - verschil);
+
+        document.getElementById("investment").value = investment;
+
+    }
+
+}
 
 
 
