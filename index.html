@@ -1,1 +1,614 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Box 3 Policy Challenge</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+
+    margin:0;
+    padding:15px;
+    background:#eef2f7;
+    font-family:"Segoe UI", Arial, sans-serif;
+    color:#1f2937;
+
+}
+
+
+.container{
+
+    max-width:700px;
+    margin:auto;
+
+}
+
+
+
+/* HEADER */
+
+.header{
+
+    background:linear-gradient(135deg,#0f172a,#2563eb);
+    color:white;
+    padding:25px;
+    border-radius:20px;
+    margin-bottom:20px;
+
+}
+
+
+.header h1{
+
+    margin:0;
+    font-size:28px;
+
+}
+
+
+.header p{
+
+    opacity:.9;
+
+}
+
+
+
+/* KAARTEN */
+
+.card{
+
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    margin-bottom:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+
+
+h2{
+
+    color:#1e3a8a;
+    margin-top:0;
+
+}
+
+
+
+/* STARTSCHERM */
+
+input{
+
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid #cbd5e1;
+    font-size:16px;
+
+}
+
+
+button{
+
+    width:100%;
+    padding:15px;
+    margin-top:15px;
+    border:none;
+    border-radius:12px;
+    background:#2563eb;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+
+}
+
+
+button:hover{
+
+    background:#1d4ed8;
+
+}
+
+
+
+/* DASHBOARD */
+
+.dashboard{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+
+}
+
+
+.stat{
+
+    background:#f8fafc;
+    padding:15px;
+    border-radius:12px;
+    text-align:center;
+
+}
+
+
+.stat-title{
+
+    font-size:13px;
+    color:#64748b;
+
+}
+
+
+.stat-value{
+
+    font-size:22px;
+    font-weight:bold;
+    color:#2563eb;
+
+}
+
+
+
+
+/* SPEL */
+
+.hidden{
+
+    display:none;
+
+}
+
+
+
+.slider-box{
+
+    margin-bottom:25px;
+
+}
+
+
+.slider-header{
+
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+
+}
+
+
+.slider-value{
+
+    color:#2563eb;
+
+}
+
+
+input[type="range"]{
+
+    padding:0;
+    margin-top:10px;
+
+}
+
+
+
+.info{
+
+    background:#eff6ff;
+    padding:15px;
+    border-radius:12px;
+    border-left:5px solid #2563eb;
+
+}
+
+
+
+/* RESULTAAT */
+
+.result{
+
+    background:#f0fdf4;
+    border-left:5px solid #16a34a;
+    padding:15px;
+    border-radius:12px;
+
+}
+
+
+
+@media(max-width:500px){
+
+    body{
+
+        padding:10px;
+
+    }
+
+
+    .dashboard{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .header h1{
+
+        font-size:23px;
+
+    }
+
+}
+
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+<div class="container">
+
+
+
+<div class="header">
+
+<h1>📊 Box 3 Policy Challenge</h1>
+
+<p>
+Een strategisch spel over belasting,
+beleggen en economische ontwikkelingen.
+</p>
+
+</div>
+
+
+
+
+
+<!-- START -->
+
+<div class="card" id="startScreen">
+
+
+<h2>Welkom</h2>
+
+
+<p>
+
+Je bent gedurende 8 jaren verantwoordelijk
+voor een vermogen.
+
+Maak keuzes over sparen, beleggen en groen investeren.
+
+</p>
+
+
+
+<label>
+
+Naam:
+
+</label>
+
+
+<input 
+id="playerName"
+placeholder="Vul je naam in"
+>
+
+
+<button onclick="startGame()">
+
+Start simulatie
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- GAME -->
+
+<div id="gameScreen" class="hidden">
+
+
+
+<div class="card">
+
+
+<div class="dashboard">
+
+
+<div class="stat">
+
+<div class="stat-title">
+Jaar
+</div>
+
+<div class="stat-value">
+
+<span id="year">
+1
+</span>/8
+
+</div>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<div class="stat-title">
+Vermogen
+</div>
+
+<div class="stat-value" id="wealth">
+
+€150.000
+
+</div>
+
+</div>
+
+
+
+
+<div class="stat">
+
+<div class="stat-title">
+Score
+</div>
+
+<div class="stat-value" id="score">
+
+0
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="card">
+
+
+<h2>🎯 Kies je strategie</h2>
+
+
+<div class="info">
+
+Beschikbaar vermogen:
+
+<strong id="available">
+
+€150.000
+
+</strong>
+
+</div>
+
+<br>
+
+
+
+
+<div class="slider-box">
+
+
+<div class="slider-header">
+
+<span>Spaargeld</span>
+
+<span class="slider-value" id="savingValue">
+
+€50.000
+
+</span>
+
+</div>
+
+
+<input 
+type="range"
+id="saving"
+min="0"
+max="150000"
+step="5000"
+value="50000"
+>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="slider-box">
+
+
+<div class="slider-header">
+
+<span>Beleggingen</span>
+
+<span class="slider-value" id="investmentValue">
+
+€50.000
+
+</span>
+
+</div>
+
+
+<input 
+type="range"
+id="investment"
+min="0"
+max="150000"
+step="5000"
+value="50000"
+>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="slider-box">
+
+
+<div class="slider-header">
+
+<span>Groene investeringen</span>
+
+<span class="slider-value" id="greenValue">
+
+€50.000
+
+</span>
+
+</div>
+
+
+<input 
+type="range"
+id="green"
+min="0"
+max="150000"
+step="5000"
+value="50000"
+>
+
+
+</div>
+
+
+
+
+
+<p>
+
+Verdeling:
+
+<strong id="total">
+
+€150.000
+
+</strong>
+
+</p>
+
+
+
+
+<button id="submitStrategy">
+
+Dien strategie in
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card result">
+
+
+<h2>📈 Jaarresultaat</h2>
+
+
+<p>
+Rendement:
+<strong id="returnResult">-</strong>
+</p>
+
+
+<p>
+Box 3 belasting:
+<strong id="taxResult">-</strong>
+</p>
+
+
+<p>
+Nieuw vermogen:
+<strong id="newWealth">-</strong>
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+<script>
+
+
+// DEEL 2 VOEGT HIER DE SPELLOGICA TOE
+
+
+</script>
+
+
+
+</body>
+</html>
