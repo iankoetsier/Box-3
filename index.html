@@ -603,7 +603,281 @@ Nieuw vermogen:
 <script>
 
 
-// DEEL 2 VOEGT HIER DE SPELLOGICA TOE
+// =============================
+// BOX 3 POLICY CHALLENGE v2.0
+// DEEL 2 - BASIS SPELLOGICA
+// =============================
+
+
+let game = {
+
+    player:"",
+    year:1,
+    maxYears:8,
+
+    wealth:150000,
+
+    score:0,
+
+    portfolio:{
+        saving:50000,
+        investment:50000,
+        green:50000
+    }
+
+};
+
+
+
+// =============================
+// START SPEL
+// =============================
+
+function startGame(){
+
+    let name =
+    document.getElementById("playerName").value.trim();
+
+
+    if(name === ""){
+
+        alert("Vul eerst je naam in.");
+
+        return;
+
+    }
+
+
+    game.player = name;
+
+
+    document.getElementById("startScreen")
+    .classList.add("hidden");
+
+
+    document.getElementById("gameScreen")
+    .classList.remove("hidden");
+
+
+    updateScreen();
+
+
+}
+
+
+
+
+// =============================
+// EURO FORMAT
+// =============================
+
+function euro(bedrag){
+
+    return "€" +
+    Math.round(bedrag)
+    .toLocaleString("nl-NL");
+
+}
+
+
+
+
+// =============================
+// SLIDERS
+// =============================
+
+
+function updatePortfolio(changed){
+
+
+    let saving =
+    Number(document.getElementById("saving").value);
+
+
+    let investment =
+    Number(document.getElementById("investment").value);
+
+
+    let green =
+    Number(document.getElementById("green").value);
+
+
+
+    let totaal =
+    saving + investment + green;
+
+
+
+    let verschil =
+    totaal - game.wealth;
+
+
+
+    // voorkomen dat studenten teveel verdelen
+
+    if(verschil > 0){
+
+
+        if(changed !== "saving"){
+
+            investment =
+            Math.max(0,investment-verschil);
+
+            document.getElementById("investment").value =
+            investment;
+
+        }
+
+        else if(changed !== "investment"){
+
+            green =
+            Math.max(0,green-verschil);
+
+            document.getElementById("green").value =
+            green;
+
+        }
+
+        else{
+
+            saving =
+            Math.max(0,saving-verschil);
+
+            document.getElementById("saving").value =
+            saving;
+
+        }
+
+    }
+
+
+
+    game.portfolio.saving=saving;
+    game.portfolio.investment=investment;
+    game.portfolio.green=green;
+
+
+
+    updateScreen();
+
+
+}
+
+
+
+
+
+// =============================
+// SCHERM BIJWERKEN
+// =============================
+
+
+function updateScreen(){
+
+
+    document.getElementById("year")
+    .innerHTML =
+    game.year;
+
+
+
+    document.getElementById("wealth")
+    .innerHTML =
+    euro(game.wealth);
+
+
+
+    document.getElementById("available")
+    .innerHTML =
+    euro(game.wealth);
+
+
+
+    document.getElementById("score")
+    .innerHTML =
+    game.score;
+
+
+
+    document.getElementById("savingValue")
+    .innerHTML =
+    euro(game.portfolio.saving);
+
+
+
+    document.getElementById("investmentValue")
+    .innerHTML =
+    euro(game.portfolio.investment);
+
+
+
+    document.getElementById("greenValue")
+    .innerHTML =
+    euro(game.portfolio.green);
+
+
+
+    document.getElementById("total")
+    .innerHTML =
+    euro(
+        game.portfolio.saving +
+        game.portfolio.investment +
+        game.portfolio.green
+    );
+
+
+}
+
+
+
+
+// =============================
+// SLIDER KOPPELEN
+// =============================
+
+
+document
+.getElementById("saving")
+.addEventListener(
+"input",
+function(){
+
+    updatePortfolio("saving");
+
+});
+
+
+
+document
+.getElementById("investment")
+.addEventListener(
+"input",
+function(){
+
+    updatePortfolio("investment");
+
+});
+
+
+
+document
+.getElementById("green")
+.addEventListener(
+"input",
+function(){
+
+    updatePortfolio("green");
+
+});
+
+
+
+
+// =============================
+// STARTWAARDE TONEN
+// =============================
+
+updateScreen();
 
 
 </script>
