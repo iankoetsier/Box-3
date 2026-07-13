@@ -1161,6 +1161,15 @@ euro(nieuwVermogen);
 game.wealth =
 nieuwVermogen;
 
+ // nieuwe startverdeling voor volgend jaar
+
+game.portfolio.saving = Math.round(nieuwVermogen / 3);
+game.portfolio.investment = Math.round(nieuwVermogen / 3);
+game.portfolio.green = Math.round(
+    nieuwVermogen -
+    game.portfolio.saving -
+    game.portfolio.investment
+);   
 
 
 document.getElementById("wealth")
