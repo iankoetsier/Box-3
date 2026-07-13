@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Box 3 Policy Challenge</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin:0;
+    padding:20px;
+    background:#eef2f7;
+    font-family:"Segoe UI", Arial, sans-serif;
+    color:#1f2937;
+}
+
+.container {
+    max-width:1200px;
+    margin:auto;
+}
+
+
+/* HEADER */
+
+.header {
+
+    background:linear-gradient(135deg,#0f172a,#2563eb);
+    color:white;
+    padding:35px;
+    border-radius:22px;
+    margin-bottom:25px;
+
+}
+
+.header h1 {
+
+    margin:0;
+    font-size:34px;
+
+}
+
+.header p {
+
+    margin-bottom:0;
+    opacity:.9;
+
+}
+
+
+/* DASHBOARD */
+
+.dashboard {
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+    margin-bottom:25px;
+
+}
+
+
+.stat {
+
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+
+.stat-title {
+
+    color:#64748b;
+    font-size:14px;
+
+}
+
+
+.stat-value {
+
+    font-size:26px;
+    font-weight:bold;
+    color:#1d4ed8;
+    margin-top:8px;
+
+}
+
+
+
+/* HOOFDSCHERM */
+
+.main {
+
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+
+}
+
+
+.panel {
+
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+}
+
+
+.panel h2 {
+
+    margin-top:0;
+    color:#1e3a8a;
+
+}
+
+
+
+/* MISSIE */
+
+.mission {
+
+    background:#eff6ff;
+    border-left:5px solid #2563eb;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+
+}
+
+
+
+/* PORTFOLIO */
+
+.portfolio-box {
+
+    background:#f8fafc;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+
+}
+
+
+.input-group {
+
+    margin-bottom:25px;
+
+}
+
+
+label {
+
+    display:flex;
+    justify-content:space-between;
+    font-weight:600;
+
+}
+
+
+.value {
+
+    color:#2563eb;
+
+}
+
+
+input[type="range"] {
+
+    width:100%;
+    margin-top:10px;
+
+}
+
+
+/* KNOP */
+
+button {
+
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+
+}
+
+
+button:hover {
+
+    background:#1d4ed8;
+
+}
+
+
+
+/* INFORMATIEVAKKEN */
+
+.news {
+
+    background:#fff7ed;
+    border-left:5px solid #f97316;
+    padding:15px;
+    border-radius:10px;
+
+}
+
+
+.result {
+
+    background:#f0fdf4;
+    border-left:5px solid #16a34a;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+
+}
+
+
+.feedback {
+
+    background:#f8fafc;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+
+}
+
+
+
+/* DOCENT */
+
+.teacher {
+
+    display:none;
+    margin-top:25px;
+    background:#faf5ff;
+    border-left:5px solid #9333ea;
+    padding:20px;
+    border-radius:12px;
+
+}
+
+
+
+/* RESPONSIVE */
+
+@media(max-width:850px){
+
+    .main {
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .header h1 {
+
+        font-size:25px;
+
+    }
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<div class="header">
+
+<h1>📊 Box 3 Policy Challenge</h1>
+
+<p>
+Een 8-jarige simulatie over belastingbeleid,
+beleggingskeuzes en economische ontwikkelingen.
+</p>
+
+</div>
+
+
+
+
+<div class="dashboard">
+
+
+<div class="stat">
+
+<div class="stat-title">
+Jaar
+</div>
+
+<div class="stat-value">
+<span id="year">1</span> / 8
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="stat-title">
+Huidig vermogen
+</div>
+
+<div class="stat-value" id="wealth">
+€150.000
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="stat-title">
+Score
+</div>
+
+<div class="stat-value" id="score">
+0
+</div>
+
+</div>
+
+
+
+<div class="stat">
+
+<div class="stat-title">
+Strategie
+</div>
+
+<div class="stat-value" id="strategy">
+-
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="main">
+
+
+
+<div class="panel">
+
+
+<h2>🎯 Vermogensstrategie</h2>
+
+
+
+<div class="mission">
+
+<strong>Missie jaar 1</strong>
+
+<p>
+Bouw een strategie die een goed rendement behaalt
+en rekening houdt met belastingdruk en risico.
+</p>
+
+</div>
+
+
+
+
+<div class="portfolio-box">
+
+
+<h3>Beschikbaar vermogen</h3>
+
+<strong id="available">
+€150.000
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="input-group">
+
+
+<label>
+
+Spaargeld
+
+<span class="value" id="savingValue">
+€50.000
+</span>
+
+</label>
+
+
+<input 
+id="saving"
+type="range"
+min="0"
+max="150000"
+step="5000"
+value="50000"
+>
+
+
+</div>
+
+
+
+
+
+
+<div class="input-group">
+
+
+<label>
+
+Beleggingen
+
+<span class="value" id="investmentValue">
+€50.000
+</span>
+
+</label>
+
+
+<input 
+id="investment"
+type="range"
+min="0"
+max="150000"
+step="5000"
+value="50000"
+>
+
+
+</div>
+
+
+
+
+
+
+<div class="input-group">
+
+
+<label>
+
+Groene beleggingen
+
+<span class="value" id="greenValue">
+€50.000
+</span>
+
+</label>
+
+
+<input 
+id="green"
+type="range"
+min="0"
+max="150000"
+step="5000"
+value="50000"
+>
+
+
+</div>
+
+
+
+
+<p>
+
+Verdeling:
+
+<strong id="total">
+€150.000
+</strong>
+
+</p>
+
+
+
+
+<button id="submitStrategy">
+
+Dien strategie in
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="panel">
+
+
+<h2>📰 Economische omgeving</h2>
+
+
+<div class="news">
+
+Er zijn nog geen economische ontwikkelingen bekend.
+
+<br><br>
+
+Maak eerst je strategie voor dit jaar.
+
+</div>
+
+
+
+
+<div class="result">
+
+<strong>
+Jaarresultaat
+</strong>
+
+
+<p>
+Rendement:
+<span id="returnResult">-</span>
+</p>
+
+
+<p>
+Box 3 belasting:
+<span id="taxResult">-</span>
+</p>
+
+
+<p>
+Nieuw vermogen:
+<span id="newWealth">-</span>
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="feedback">
+
+
+<strong>👨‍🏫 Analyse</strong>
+
+
+<p>
+
+Na afloop van het jaar ontvang je feedback
+over jouw keuzes.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+<div class="teacher" id="teacher">
+
+
+<h2>👨‍🏫 Docentmodus</h2>
+
+
+<p>
+
+Voorbereid voor:
+
+</p>
+
+
+<ul>
+
+<li>Scenarioselectie</li>
+
+<li>Eventbeheer</li>
+
+<li>Ranking studenten</li>
+
+<li>Analyse resultaten</li>
+
+<li>Export gegevens</li>
+
+</ul>
+
+
+</div>
+
+
+
+
+
+</div>
+
+<script>
+
+
+// =============================
+// BOX 3 POLICY CHALLENGE
+// BASIS SPELSTATUS
+// =============================
+
+
+let game = {
+
+    year: 1,
+    maxYears: 8,
+
+    wealth: 150000,
+
+    score: 0,
+
+    portfolio: {
+
+        saving: 50000,
+        investment: 50000,
+        green: 50000
+
+    },
+
+    history: []
+
+};
+
+
+
+// =============================
+// ELEMENTEN
+// =============================
+
+
+const savingSlider = document.getElementById("saving");
+const investmentSlider = document.getElementById("investment");
+const greenSlider = document.getElementById("green");
+
+
+
+
+// =============================
+// BEDRAGEN FORMATTEREN
+// =============================
+
+
+function euro(amount){
+
+    return "€" + Math.round(amount)
+    .toLocaleString("nl-NL");
+
+}
+
+
+
+// =============================
+// SLIDERS INSTELLEN
+// =============================
+
+
+function updateSliders(changed){
+
+
+    let saving =
+    Number(savingSlider.value);
+
+
+    let investment =
+    Number(investmentSlider.value);
+
+
+    let green =
+    Number(greenSlider.value);
+
+
+
+    let total =
+    saving + investment + green;
+
+
+
+    let difference =
+    total - game.wealth;
+
+
+
+    /*
+    Als de student boven het beschikbare vermogen komt,
+    wordt de andere categorie automatisch aangepast.
+    */
+
+
+    if(difference > 0){
+
+
+        if(changed !== "saving"){
+
+            investment =
+            Math.max(0, investment - difference);
+
+            investmentSlider.value = investment;
+
+        }
+
+        else if(changed !== "investment"){
+
+            green =
+            Math.max(0, green - difference);
+
+            greenSlider.value = green;
+
+        }
+
+        else {
+
+            saving =
+            Math.max(0, saving - difference);
+
+            savingSlider.value = saving;
+
+        }
+
+    }
+
+
+
+    game.portfolio.saving = saving;
+    game.portfolio.investment = investment;
+    game.portfolio.green = green;
+
+
+
+    document.getElementById("savingValue")
+    .innerHTML = euro(saving);
+
+
+    document.getElementById("investmentValue")
+    .innerHTML = euro(investment);
+
+
+    document.getElementById("greenValue")
+    .innerHTML = euro(green);
+
+
+
+    document.getElementById("total")
+    .innerHTML = euro(
+        saving + investment + green
+    );
+
+
+
+    document.getElementById("available")
+    .innerHTML = euro(game.wealth);
+
+
+
+}
+
+
+
+
+
+// =============================
+// EVENT LISTENERS SLIDERS
+// =============================
+
+
+savingSlider.addEventListener(
+"input",
+function(){
+
+    updateSliders("saving");
+
+});
+
+
+investmentSlider.addEventListener(
+"input",
+function(){
+
+    updateSliders("investment");
+
+});
+
+
+greenSlider.addEventListener(
+"input",
+function(){
+
+    updateSliders("green");
+
+});
+
+
+
+
+// =============================
+// STRATEGIE INDIENEN
+// (VOORBEREIDING VOOR DEEL 2)
+// =============================
+
+
+document
+.getElementById("submitStrategy")
+.addEventListener(
+"click",
+function(){
+
+
+    let total =
+    game.portfolio.saving +
+    game.portfolio.investment +
+    game.portfolio.green;
+
+
+
+    if(total !== game.wealth){
+
+        alert(
+        "Verdeel eerst het volledige vermogen."
+        );
+
+        return;
+
+    }
+
+
+
+    document.querySelector(".news")
+    .innerHTML =
+
+    `
+    📊 Strategie ontvangen
+
+    <br><br>
+
+    Je portefeuille:
+
+    <br><br>
+
+    Spaargeld:
+    ${euro(game.portfolio.saving)}
+
+    <br>
+
+    Beleggingen:
+    ${euro(game.portfolio.investment)}
+
+    <br>
+
+    Groen:
+    ${euro(game.portfolio.green)}
+
+    <br><br>
+
+    De economische ontwikkeling
+    wordt nu berekend.
+
+    `;
+
+
+
+    document.getElementById("strategy")
+    .innerHTML =
+
+    "Actief";
+
+
+
+    game.history.push({
+
+        year: game.year,
+
+        portfolio:
+        {...game.portfolio},
+
+        startingWealth:
+        game.wealth
+
+    });
+
+
+
+});
+
+
+
+
+
+// =============================
+// START
+// =============================
+
+
+updateSliders();
+
+
+</script>
+
+</body>
+
+</html>
