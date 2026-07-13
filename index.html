@@ -898,7 +898,7 @@ game.portfolio.green;
 
 
 
-if(gekozenVermogen !== game.wealth){
+if(Math.round(gekozenVermogen) !== Math.round(game.wealth)){
 
     alert(
     "Verdeel eerst het volledige vermogen."
@@ -1184,6 +1184,10 @@ game.score;
 if(game.year < game.maxYears){
 
     game.year++;
+
+    alert(
+    "Jaar " + game.year + " begint!"
+    );
 
 }
 
