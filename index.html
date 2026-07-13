@@ -951,7 +951,7 @@ let aandelenRendementen = [
 ];
 
 
-let aandelenRendement =
+game.currentAandelenRendement =
 
 aandelenRendementen[
 
@@ -1011,7 +1011,7 @@ spaarrente;
 let beleggenResultaat =
 
 game.portfolio.investment *
-aandelenRendement;
+game.currentAandelenRendement;
 
 
 
@@ -1134,7 +1134,7 @@ if(game.portfolio.green > 0){
 
 
 
-if(aandelenRendement < 0){
+if(game.currentAandelenRendement < 0){
 
     punten -= 100;
 
@@ -1254,7 +1254,7 @@ document.querySelector(".info")
 Aandelenmarkt:
 
 <strong>
-${(aandelenRendement*100).toFixed(1)}%
+${(game.currentAandelenRendement*100).toFixed(1)}%
 </strong>
 
 <br>
