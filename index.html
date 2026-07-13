@@ -749,13 +749,38 @@ if(verschil > 0){
 
 
 
-    game.portfolio.saving=saving;
-    game.portfolio.investment=investment;
-    game.portfolio.green=green;
+game.portfolio.saving = saving;
+game.portfolio.investment = investment;
+game.portfolio.green = green;
 
 
+// bedragen direct aanpassen
 
-    updateScreen();
+document.getElementById("savingValue")
+.innerHTML =
+euro(saving);
+
+
+document.getElementById("investmentValue")
+.innerHTML =
+euro(investment);
+
+
+document.getElementById("greenValue")
+.innerHTML =
+euro(green);
+
+
+document.getElementById("total")
+.innerHTML =
+euro(
+    saving +
+    investment +
+    green
+);
+
+
+updateScreen();
 
 
 }
